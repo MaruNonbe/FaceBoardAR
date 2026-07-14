@@ -67,23 +67,25 @@
   <a-camera id="main-camera"></a-camera>
 
   <!-- 船モデル（影は不要） -->
-  <a-entity id="ship"
-            gltf-model="models/koukaihune.glb"
-            position="0 -0.5 -15"
-            rotation="0 180 0"
-            scale="5 5 5">
-  </a-entity>
+<a-entity id="ship"
+          gltf-model="https://marunonbe.github.io/FaceBoardAR/models/koukaihune.glb"
+          position="0 -0.5 -15"
+          rotation="0 180 0"
+          scale="5 5 5">
+</a-entity>
+
 
   <!-- =============================== -->
   <!-- 顔出し看板モデル（影を落とす） -->
   <!-- =============================== -->
-  <a-entity id="face-board"
-            gltf-model="models/Barnic_Face_Hole.glb"
-            position="0 0 -5"
-            rotation="0 180 0"
-            scale="1.8 1.8 1.8"
-            shadow="cast: true; receive: false">
-  </a-entity>
+<a-entity id="face-board"
+          gltf-model="https://marunonbe.github.io/FaceBoardAR/models/Barnic_Face_Hole.glb"
+          position="0 0 -5"
+          rotation="0 180 0"
+          scale="1.8 1.8 1.8"
+          shadow="cast: true; receive: false">
+</a-entity>
+
 
   <!-- =============================== -->
   <!-- 地面プレーン（影を受ける） -->
