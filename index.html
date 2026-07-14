@@ -13,26 +13,47 @@
 
   <style>
     body { margin: 0; overflow: hidden; }
-    #debug-info {
+
+    .ui-btn {
       position: fixed;
-      bottom: calc(10px + env(safe-area-inset-bottom));
-      left: 10px;
+      bottom: 20px;
+      background: rgba(0,0,0,0.6);
       color: white;
-      background: rgba(0,0,0,0.52);
-      font-size: 11px;
-      z-index: 10000;
-      pointer-events: none;
-      padding: 7px 9px;
+      padding: 10px 14px;
       border-radius: 8px;
-      white-space: pre-line;
-      max-width: calc(100vw - 20px);
+      font-size: 14px;
+      z-index: 9999;
+      user-select: none;
     }
+
+    #btn-fwd { left: 50%; transform: translateX(-50%); bottom: 120px; }
+    #btn-back { left: 50%; transform: translateX(-50%); bottom: 60px; }
+
+    #btn-turn-left { left: 20px; bottom: 90px; }
+    #btn-turn-right { right: 20px; bottom: 90px; }
+
+    #btn-height-up { left: 20px; bottom: 160px; }
+    #btn-height-down { left: 20px; bottom: 30px; }
+
+    #btn-zoom-in { right: 20px; bottom: 160px; }
+    #btn-zoom-out { right: 20px; bottom: 30px; }
   </style>
 </head>
 
 <body>
 
-<div id="debug-info">モード: 自由配置（Manual）</div>
+<!-- UIボタン -->
+<div id="btn-fwd" class="ui-btn">前へ</div>
+<div id="btn-back" class="ui-btn">後ろへ</div>
+
+<div id="btn-turn-left" class="ui-btn">左へ</div>
+<div id="btn-turn-right" class="ui-btn">右へ</div>
+
+<div id="btn-height-up" class="ui-btn">上へ</div>
+<div id="btn-height-down" class="ui-btn">下へ</div>
+
+<div id="btn-zoom-in" class="ui-btn">拡大</div>
+<div id="btn-zoom-out" class="ui-btn">縮小</div>
 
 <a-scene
   embedded
@@ -52,15 +73,15 @@
 
   <a-camera></a-camera>
 
-  <!-- 船モデル（絶対パス） -->
+  <!-- 船モデル（忠彰の正しいファイル名） -->
   <a-entity id="ship"
-            gltf-model="https://marunonbe.github.io/FaceBoardAR/models/Cafe-v1.glb"
+            gltf-model="https://marunonbe.github.io/FaceBoardAR/models/koukaihune.glb"
             position="0 -0.5 -2"
             rotation="0 180 0"
             scale="0.8 0.8 0.8">
   </a-entity>
 
-  <!-- 顔出し看板モデル（絶対パス） -->
+  <!-- 顔出し看板 -->
   <a-entity id="face-board"
             gltf-model="https://marunonbe.github.io/FaceBoardAR/models/Barnic_Face_Hole.glb"
             position="0 0 -1.5"
@@ -80,6 +101,39 @@
   </a-plane>
 
 </a-scene>
+
+<script>
+// 看板モデル
+const faceBoard = document.getElementById("face-board");
+const ground = document.getElementById("shadow-ground");
+
+// 現在の値
+let fbPos = { x: 0, y: 0, z: -1.5 };
+let fbScale = 0.8;
+
+// 更新関数
+function updateFaceBoard() {
+  faceBoard.setAttribute("position", `${fbPos.x} ${fbPos.y} ${fbPos.z}`);
+  faceBoard.setAttribute("scale", `${fbScale} ${fbScale} ${fbScale}`);
+  ground.setAttribute("position", `${fbPos.x} -0.01 ${fbPos.z}`);
+}
+
+// UI 操作
+document.getElementById("btn-fwd").onclick = () => { fbPos.z -= 0.2; updateFaceBoard(); };
+document.getElementById("btn-back").onclick = () => { fbPos.z += 0.2; updateFaceBoard(); };
+
+document.getElementById("btn-turn-left").onclick = () => { fbPos.x -= 0.2; updateFaceBoard(); };
+document.getElementById("btn-turn-right").onclick = () => { fbPos.x += 0.2; updateFaceBoard(); };
+
+document.getElementById("btn-height-up").onclick = () => { fbPos.y += 0.15; updateFaceBoard(); };
+document.getElementById("btn-height-down").onclick = () => { fbPos.y -= 0.15; updateFaceBoard(); };
+
+document.getElementById("btn-zoom-in").onclick = () => { fbScale += 0.1; updateFaceBoard(); };
+document.getElementById("btn-zoom-out").onclick = () => { fbScale -= 0.1; if (fbScale < 0.2) fbScale = 0.2; updateFaceBoard(); };
+
+// 初期反映
+updateFaceBoard();
+</script>
 
 </body>
 </html>
