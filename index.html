@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0,
+                 user-scalable=no, viewport-fit=cover" />
+  <title>FaceBoard AR - Shadow Edition</title>
+
+  <!-- A-Frame / AR.js -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js"></script>
+
+  <style>
+    #debug-info {
+      position: fixed;
+      bottom: calc(10px + env(safe-area-inset-bottom));
+      left: 10px;
+      color: white;
+      background: rgba(0,0,0,0.52);
+      font-size: 11px;
+      z-index: 10000;
+      pointer-events: none;
+      padding: 7px 9px;
+      border-radius: 8px;
+      white-space: pre-line;
+      max-width: calc(100vw - 20px);
+    }
+
+    #copyright {
+      position: fixed;
+      right: 12px;
+      bottom: calc(12px + env(safe-area-inset-bottom));
+      color: rgba(255,255,255,0.85);
+      font-size: 12px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="debug-info">モード: 自由配置（Manual）</div>
+<a-scene
+  id="ship-scene"
+  renderer="precision: mediump; antialias: true; alpha: true; colorManagement: true; exposure: 1.2; shadowMapEnabled: true;"
+  embedded
+  vr-mode-ui="enabled: false"
+  arjs="sourceType: webcam; debugUIEnabled: false; videoTexture: true; facingMode: environment;"
+>
+
+  <!-- 太陽光（影を生成） -->
+  <a-light type="directional"
+           position="-1 4 2"
+           intensity="1.2"
+           castShadow="true"
+           shadow-camera-near="0.1"
+           shadow-camera-far="50"
+           shadow-map-width="2048"
+           shadow-map-height="2048">
+  </a-light>
+
+  <!-- 環境光 -->
+  <a-light type="ambient" color="#FFF" intensity="1.2"></a-light>
+
+  <a-camera id="main-camera"></a-camera>
+
+  <!-- 船モデル（影は不要） -->
+  <a-entity id="ship"
+            gltf-model="models/koukaihune.glb"
+            position="0 -0.5 -15"
+            rotation="0 180 0"
+            scale="5 5 5">
+  </a-entity>
+
+  <!-- =============================== -->
+  <!-- 顔出し看板モデル（影を落とす） -->
+  <!-- =============================== -->
+  <a-entity id="face-board"
+            gltf-model="models/Barnic_Face_Hole.glb"
+            position="0 0 -5"
+            rotation="0 180 0"
+            scale="1.8 1.8 1.8"
+            shadow="cast: true; receive: false">
+  </a-entity>
+
+  <!-- =============================== -->
+  <!-- 地面プレーン（影を受ける） -->
+  <!-- =============================== -->
+  <a-plane id="shadow-ground"
+           position="0 -0.01 -5"
+           rotation="-90 0 0"
+           width="20"
+           height="20"
+           material="color: #ffffff; opacity: 0"
+           shadow="receive: true">
+  </a-plane>
+
+</a-scene>
+<script>
+// 看板モデル
+const faceBoard = document.getElementById("face-board");
+const ground = document.getElementById("shadow-ground");
+
+// 現在の値
+let fbPos = { x: 0, y: 0, z: -5 };
+let fbRotY = 180;
+let fbScale = 1.8;
+
+// 更新関数
+function updateFaceBoard() {
+  faceBoard.setAttribute("position", `${fbPos.x} ${fbPos.y} ${fbPos.z}`);
+  faceBoard.setAttribute("rotation", `0 ${fbRotY} 0`);
+  faceBoard.setAttribute("scale", `${fbScale} ${fbScale} ${fbScale}`);
+
+  // 地面も追従
+  ground.setAttribute("position", `${fbPos.x} -0.01 ${fbPos.z}`);
+}
+
+// UI 操作
+document.getElementById("btn-fwd").onclick = () => { fbPos.z -= 0.3; updateFaceBoard(); };
+document.getElementById("btn-back").onclick = () => { fbPos.z += 0.3; updateFaceBoard(); };
+document.getElementById("btn-turn-left").onclick = () => { fbPos.x -= 0.3; updateFaceBoard(); };
+document.getElementById("btn-turn-right").onclick = () => { fbPos.x += 0.3; updateFaceBoard(); };
+document.getElementById("btn-curve-left-fwd").onclick = () => { fbRotY += 10; updateFaceBoard(); };
+document.getElementById("btn-curve-right-fwd").onclick = () => { fbRotY -= 10; updateFaceBoard(); };
+document.getElementById("btn-height-up").onclick = () => { fbPos.y += 0.15; updateFaceBoard(); };
+document.getElementById("btn-height-down").onclick = () => { fbPos.y -= 0.15; updateFaceBoard(); };
+document.getElementById("btn-zoom-in").onclick = () => { fbScale += 0.15; updateFaceBoard(); };
+document.getElementById("btn-zoom-out").onclick = () => { fbScale -= 0.15; if (fbScale < 0.3) fbScale = 0.3; updateFaceBoard(); };
+
+// 初期反映
+updateFaceBoard();
+</script>
+
+<div id="copyright">© 2026 Freedom</div>
+
+</body>
+</html>
